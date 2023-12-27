@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-
+import avatar from '../assets/icons/avatar.png'
 
 
 
@@ -10,6 +10,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   return (
+    <>
     <Disclosure as="nav" className="bg-neutral-100 dark:bg-gray-900 py-3 dark:text-white fixed top-0 z-20 w-full">
      
         
@@ -27,7 +28,7 @@ export default function Navbar() {
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        src={avatar}
                         alt=""
                       />
                     </Menu.Button>
@@ -48,7 +49,7 @@ export default function Navbar() {
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
-                            Your Profile
+                            Register
                           </a>
                         )}
                       </Menu.Item>
@@ -58,7 +59,7 @@ export default function Navbar() {
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
-                            Settings
+                            Login
                           </a>
                         )}
                       </Menu.Item>
@@ -82,5 +83,7 @@ export default function Navbar() {
           
       
     </Disclosure>
+    <div className='h-[55px]'></div>
+    </>
   )
 }
