@@ -9,7 +9,8 @@ const firebaseConfig = {
     projectId: process.env.REACT_APP_projectId,
     storageBucket: process.env.REACT_APP_storageBucket,
     messagingSenderId:process.env.REACT_APP_messagingSenderId,
-    appId: process.env.REACT_APP_appId
+    appId: process.env.REACT_APP_appId,
+    TMDB_Key:process.env.REACT_APP_TMDB_Key
 };
 
 // Initialize Firebase
@@ -17,4 +18,4 @@ const app = initializeApp(firebaseConfig);
 
 
 // Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
+ export  const auth = getAuth(app);
