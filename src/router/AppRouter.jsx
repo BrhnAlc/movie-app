@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 import Main from "../pages/Main";
 import Navbar from "../components/Navbar";
 import Login from './../pages/Login';
@@ -8,7 +8,7 @@ import MovieDetail from './../pages/MovieDetail';
 
 const AppRouter = () => {
   return (
-  <BrowserRouter>
+  <>
   <Navbar/>
     <Routes>
            <Route path='/main' element={<Main />} />
@@ -17,7 +17,7 @@ const AppRouter = () => {
           <Route path="details/:id" element={<MovieDetail />} />
           
       </Routes>
-    </BrowserRouter>
+      </>
     );
 };
 

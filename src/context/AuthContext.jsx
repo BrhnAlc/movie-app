@@ -1,6 +1,8 @@
 import React, { createContext } from 'react'
 import { auth } from "../auth/firebase";
 import { createUserWithEmailAndPassword ,signInWithEmailAndPassword} from 'firebase/auth';
+import { navigate, useNavigate } from 'react-router-dom';
+
 
 
 
@@ -9,23 +11,27 @@ import { createUserWithEmailAndPassword ,signInWithEmailAndPassword} from 'fireb
 
 const AuthContextProvider= ({children}) => {
   // Bu bileşen, oluşturduğumuz AuthContext'i sağlar ve içinde kullanılacak diğer bileşenlere bu context'i iletebilir.
-
+    let navigate = useNavigate();
     const createUser = async(email,password)=>{
       // yeni bir kullanıcı oluşturmak için kullanılan firebase metodu
         try {
          let userCredential =   await createUserWithEmailAndPassword(auth, email, password); 
          console.log(userCredential);
+         navigate("/");
         } catch (error) {
            console.log(error.message); 
         }
-    }
+    };
    const signIn =async(email,password)=>{
     try {
-        await  signInWithEmailAndPassword(auth, email, password)
+     let userCredential =   await  signInWithEmailAndPassword(auth, email, password);
+     console.log(userCredential);
+     navigate("");
     } catch (error) {
       console.log(error.message);
     }
-   }
+   };
+   
 
 
   const values={createUser ,signIn}
@@ -35,4 +41,4 @@ const AuthContextProvider= ({children}) => {
   )
 }
 
-export default AuthContextProvider;
+export default AuthContextProvider; 
