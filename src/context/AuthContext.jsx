@@ -2,6 +2,7 @@ import React, { createContext } from 'react'
 import { auth } from "../auth/firebase";
 import { createUserWithEmailAndPassword ,signInWithEmailAndPassword} from 'firebase/auth';
 import { navigate, useNavigate } from 'react-router-dom';
+import { toastErrorNotify, toastSuccessNotify } from '../helpers/ToastNotify';
 
 
 
@@ -18,8 +19,9 @@ const AuthContextProvider= ({children}) => {
          let userCredential =   await createUserWithEmailAndPassword(auth, email, password); 
          console.log(userCredential);
          navigate("/");
+         toastSuccessNotify("Registered successully!")
         } catch (error) {
-           console.log(error.message); 
+           toastErrorNotify(error.message); 
         }
     };
    const signIn =async(email,password)=>{
@@ -27,8 +29,9 @@ const AuthContextProvider= ({children}) => {
      let userCredential =   await  signInWithEmailAndPassword(auth, email, password);
      console.log(userCredential);
      navigate("");
+     toastSuccessNotify("Logged in successfully!")
     } catch (error) {
-      console.log(error.message);
+      toastErrorNotify(error.message);
     }
    };
    
