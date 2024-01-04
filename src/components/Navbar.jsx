@@ -2,6 +2,8 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import avatar from '../assets/icons/avatar.png'
 import { Link } from 'react-router-dom'
+import { AuthContext } from './../context/AuthContext';
+import { useContext } from 'react';
 
 
 
@@ -10,6 +12,7 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const {logOut} = useContext(AuthContext)
   const currentUser ={displayName:"Burhan Alaca"}
   return (
     <>
@@ -70,8 +73,9 @@ export default function Navbar() {
                           <span
                            
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 cursor-pointer')}
+                            onClick={()=>logOut()}
                           >
-                            Sign out
+                            Log out
                           </span>
                         )}
                       </Menu.Item>
