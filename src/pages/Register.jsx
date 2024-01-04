@@ -14,7 +14,8 @@ const Register = () => {
   // useContext hook'u ile AuthContext'ten createUser fonksiyonunu alıyoruz.
   const handleSubmit=(e)=>{
     e.preventDefault();
-    createUser(email,password);
+    const displayName ="${name} ${lastName}"
+    createUser(email,password,displayName);
   }
   // Giriş formunun gönderilmesi durumunda çalışacak handleSubmit fonksiyonunu tanımlıyoruz. Bu fonksiyon, createUser fonksiyonunu çağırarak kullanıcı kaydı yapar.
 

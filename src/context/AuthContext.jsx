@@ -1,6 +1,6 @@
 import React, { createContext, useState,useEffect } from 'react'
 import { auth } from "../auth/firebase";
-import { createUserWithEmailAndPassword ,signInWithEmailAndPassword, signOut} from 'firebase/auth';
+import { createUserWithEmailAndPassword ,signInWithEmailAndPassword, signOut, updateProfile} from 'firebase/auth';
 import {  useNavigate } from 'react-router-dom';
 import { toastErrorNotify, toastSuccessNotify } from '../helpers/ToastNotify';
 
@@ -21,10 +21,14 @@ const AuthContextProvider= ({children}) => {
     
     }, [])
     
-    const createUser = async(email,password)=>{
+    const createUser = async(email,password,displayName)=>{
       // yeni bir kullanıcı oluşturmak için kullanılan firebase metodu
         try {
-         let userCredential =   await createUserWithEmailAndPassword(auth, email, password); 
+         let userCredential =   await createUserWithEmailAndPassword(auth, email, password);
+         await updateProfile(auth.currentUser,  {
+          // key ve value değerleri aynı ise sadece key değerlerini yazabiliriz
+          displayName
+        }) 
          console.log(userCredential);
          navigate("/");
          toastSuccessNotify("Registered successully!")
@@ -56,7 +60,7 @@ const AuthContextProvider= ({children}) => {
         setCurrentUser({email,displayName,photoURL})
         console.log(user);
       } else {
-       
+       setCurrentUser(false)
         console.log("logged out");
       }
     });
