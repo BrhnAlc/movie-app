@@ -10,11 +10,11 @@ const Register = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   // Bu state'ler, giriş formundaki farklı alanlardaki değerleri tutacak.
-  const {createUser}=useContext(AuthContext)
+  const {createUser,signUpProvider}=useContext(AuthContext)
   // useContext hook'u ile AuthContext'ten createUser fonksiyonunu alıyoruz.
   const handleSubmit=(e)=>{
     e.preventDefault();
-    const displayName ="${name} ${lastName}"
+    const displayName ="${name} ${lastName}";
     createUser(email,password,displayName);
   }
   // Giriş formunun gönderilmesi durumunda çalışacak handleSubmit fonksiyonunu tanımlıyoruz. Bu fonksiyon, createUser fonksiyonunu çağırarak kullanıcı kaydı yapar.
@@ -47,7 +47,7 @@ const Register = () => {
           </div>
           
           <button type="submit" className="btn-danger">Register</button>
-          <button type="button" className="btn-danger flex justify-between items-center">
+          <button type="button" className="btn-danger flex justify-between items-center" onClick={()=>signUpProvider()}>
             Continue with Google
             <GoogleIcon color="currentColor" />
           </button>
