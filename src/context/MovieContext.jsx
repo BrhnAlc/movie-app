@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState ,useEffect} from 'react';
  
  export const MovieContext = createContext();
 
@@ -10,17 +10,26 @@ const FEATURED_API = `https://api.themoviedb.org/3/discover/movie?api_key=${API_
 
 const MovieContextProvider = ({children}) => {
  
-    const [movie, setMovie] = useState([])
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(false)
     
-    const getMovie = (API)=>{
+    useEffect(() => {
+      getMovies(FEATURED_API )
+    
+      
+    }, [])
+    
+    const getMovies = (API)=>{
+        setLoading(true)
         axios
         .get(API)
-        .then((res)=>console.log(res))
-        .catch((err)=>console.log(err));
+        .then((res)=>setMovies(res.data.result))
+        .catch((err)=>console.log(err))
+        .finally(()=>setLoading(false));
     }
 
   return (
-    <MovieContext.Provider value={null}>{children}</MovieContext.Provider>
+    <MovieContext.Provider value={{movies, getMovies,loading}}>{children}</MovieContext.Provider>
   )
 }
 
