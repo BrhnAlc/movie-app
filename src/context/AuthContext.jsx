@@ -74,6 +74,7 @@ const AuthContextProvider= ({children}) => {
   const signUpProvider = () => {
     //? Google ile giriş yapılması için kullanılan firebase metodu
     const provider = new GoogleAuthProvider();
+    
     //?! Açılır pencere ile giriş yapılması için kullanılan firebase metodu
     signInWithPopup(auth, provider)
   .then((result) => {
