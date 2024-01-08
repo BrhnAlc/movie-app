@@ -1,70 +1,96 @@
-import React, { createContext, useState,useEffect } from 'react'
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import React, { createContext, useEffect, useState } from "react";
 import { auth } from "../auth/firebase";
-import { signInWithPopup, GoogleAuthProvider,createUserWithEmailAndPassword ,signInWithEmailAndPassword, signOut, updateProfile} from 'firebase/auth';
-import {  useNavigate } from 'react-router-dom';
-import { toastErrorNotify, toastSuccessNotify } from '../helpers/ToastNotify';
+import { useNavigate } from "react-router-dom";
+import {
+  toastErrorNotify,
+  toastSuccessNotify,
+  toastWarnNotify,
+} from "../helpers/ToastNotify";
 
-import { onAuthStateChanged } from "firebase/auth";
+export const AuthContext = createContext();
 
+//* with custom hook
+// export const useAuthCotext =() => {
+//     return useContext(AuthContext)
+// }
 
- export const AuthContext =createContext();
-//  Bu context, uygulamanız boyunca kullanıcı kimlik doğrulama işlemlerini yönetmek için kullanılacak.
+const AuthContextProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(false);
+  let navigate = useNavigate();
 
-const AuthContextProvider= ({children}) => {
-  const [currentUser, setCurrentUser] = useState(false)
-  // Bu bileşen, oluşturduğumuz AuthContext'i sağlar ve içinde kullanılacak diğer bileşenlere bu context'i iletebilir.
-    let navigate = useNavigate();
+  useEffect(() => {
+    userObserver();
+  }, []);
 
-    useEffect(() => {
-      userObserver();
-    
-    
-    }, [])
-    
-    const createUser = async(email,password,displayName)=>{
-      // yeni bir kullanıcı oluşturmak için kullanılan firebase metodu
-        try {
-         let userCredential =   await createUserWithEmailAndPassword(auth, email, password);
-         await updateProfile(auth.currentUser,  {
-          // key ve value değerleri aynı ise sadece key değerlerini yazabiliriz
-          displayName
-        }) 
-         console.log(userCredential);
-         navigate("/");
-         toastSuccessNotify("Registered successully!")
-        } catch (error) {
-           toastErrorNotify(error.message); 
-        }
-    };
-   const signIn =async(email,password)=>{
+  const createUser = async (email, password, displayName) => {
+    //? yeni bir kullanıcı oluşturmak için kullanılan firebase metodu
     try {
-     let userCredential =   await  signInWithEmailAndPassword(auth, email, password);
-     console.log(userCredential);
-     navigate("");
-     toastSuccessNotify("Logged in successfully!")
+      let userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      //? kullanıcı profilini güncellemek için kullanılan firebase metodu
+      await updateProfile(auth.currentUser, {
+        //* key ve value değerleri aynı ise sadece key değerini yazabiliriz
+        displayName,
+      });
+      // console.log(userCredential);
+      navigate("/");
+      toastSuccessNotify("Registered successfully!");
     } catch (error) {
       toastErrorNotify(error.message);
     }
-   };
-    
-   const logOut =()=>{
-    signOut(auth)
-    toastSuccessNotify("Logged in successfully!")
-   }
-   
-   const userObserver =()=>{
-    // Kullanıcının signin  olup olmadığını takip eden ve kullanıcı değiştiğinde yeni kullanıcıyı response olarak dönen firebase metodu
+  };
+
+  //* https://console.firebase.google.com/
+  //* => Authentication => sign-in-method => enable Email/password
+  //! Email/password ile girişi enable yap
+  const signIn = async (email, password) => {
+    try {
+      //? mevcut kullanıcının giriş yapması için kullanılan firebase metodu
+      let userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      navigate("/");
+      toastSuccessNotify("Logged in successfully!");
+      console.log(userCredential);
+    } catch (error) {
+      toastErrorNotify(error.message);
+    }
+  };
+
+  const logOut = () => {
+    signOut(auth);
+    toastSuccessNotify("Logged out successfully!");
+  };
+
+  const userObserver = () => {
+    //? Kullanıcının signin olup olmadığını takip eden ve kullanıcı değiştiğinde yeni kullanıcıyı response olarak dönen firebase metodu
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const {email,displayName,photoURL}=user;
-        setCurrentUser({email,displayName,photoURL})
+        const { email, displayName, photoURL } = user;
+        setCurrentUser({ email, displayName, photoURL });
         console.log(user);
       } else {
-       setCurrentUser(false)
+        // User is signed out
+        setCurrentUser(false);
         console.log("logged out");
       }
     });
-   }
+  };
 
   //* https://console.firebase.google.com/
   //* => Authentication => sign-in-method => enable Google
@@ -74,23 +100,46 @@ const AuthContextProvider= ({children}) => {
   const signUpProvider = () => {
     //? Google ile giriş yapılması için kullanılan firebase metodu
     const provider = new GoogleAuthProvider();
-    
-    //?! Açılır pencere ile giriş yapılması için kullanılan firebase metodu
+    //? Açılır pencere ile giriş yapılması için kullanılan firebase metodu
     signInWithPopup(auth, provider)
-  .then((result) => {
-    console.log(result);
-    navigate("/");
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+      .then((result) => {
+        console.log(result);
+        navigate("/");
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        console.log(error);
+      });
+  };
+
+  const forgotPassword = (email) => {
+    //? Email yoluyla şifre sıfırlama için kullanılan firebase metodu
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        toastWarnNotify("Please check your mail box!");
+        // alert("Please check your mail box!");
+      })
+      .catch((err) => {
+        toastErrorNotify(err.message);
+        // alert(err.message);
+        // ..
+      });
+  };
+
+  const values = {
+    createUser,
+    signIn,
+    logOut,
+    currentUser,
+    signUpProvider,
+    forgotPassword,
+  };
+  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
 };
 
-  const values={createUser ,signIn,logOut,currentUser,signUpProvider}
-  // Bu nesne, AuthContext'in değerine atanacak ve context içinde kullanılabilir.
-  return (
-    <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
-  )
-}
+export default AuthContextProvider;
 
-export default AuthContextProvider; 
+
+
+
